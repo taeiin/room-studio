@@ -4,6 +4,15 @@ import type { ConnectorBinding } from "../lib/connector-contract.mjs";
 
 const worker = {
   fetch(request: Request, env: Cloudflare.Env, ctx: ExecutionContext<{ CONNECTORS?: ConnectorBinding }>) {
+    // The public browser-local build must not expose legacy Sites-only APIs.
+    if ((env as unknown as Record<string, unknown>).ROOM_STUDIO_PUBLIC === 'true') {
+      let path: string;
+      try { path = decodeURIComponent(new URL(request.url).pathname).replace(/\/+/g, '/'); }
+      catch { return new Response('Bad request', { status: 400 }); }
+      if (path === '/api' || path.startsWith('/api/') || ['/signin-with-chatgpt', '/signout-with-chatgpt', '/callback'].includes(path)) {
+        return new Response('Not found', { status: 404 });
+      }
+    }
     let binding = ctx.props?.CONNECTORS;
     // Local preview emulates the same request-scoped capability. This branch and
     // the auxiliary service binding are absent from production builds.

@@ -1,0 +1,17 @@
+import { spawnSync } from 'node:child_process';
+import { readFile, writeFile } from 'node:fs/promises';
+const workerName = process.env.ROOM_STUDIO_WORKER_NAME || 'room-studio';
+if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(workerName) || workerName.length > 63) throw new Error('ROOM_STUDIO_WORKER_NAME must be lowercase letters, numbers and single hyphens (maximum 63 characters).');
+const result = spawnSync(process.execPath, ['scripts/run-framework.mjs','build'], {stdio:'inherit',env:{...process.env,ROOM_STUDIO_PUBLIC_BUILD:'1'}});
+if (result.error) throw result.error;
+if (result.status !== 0) process.exit(result.status ?? 1);
+const path = 'dist/server/wrangler.json';
+const config = JSON.parse(await readFile(path,'utf8'));
+config.name = workerName;
+config.vars = {...config.vars,ROOM_STUDIO_PUBLIC:'true'};
+config.d1_databases = [];
+config.r2_buckets = [];
+config.services = [];
+await writeFile(path, JSON.stringify(config,null,2)+'\n');
+console.log(`Public browser-local build prepared for Cloudflare Worker: ${workerName}`);
+console.log('Legacy /api and Sites authentication routes are disabled; no D1/R2 bindings are required.');
