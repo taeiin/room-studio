@@ -1,0 +1,5 @@
+export type Furniture={id:string;name:string;width:number;depth:number;height:number;roomId:string;x:number;z:number;rotation:number;blob:Blob};
+const dbName='room-studio-assets-v1';
+function database(){return new Promise<IDBDatabase>((resolve,reject)=>{const req=indexedDB.open(dbName,1);req.onupgradeneeded=()=>req.result.createObjectStore('state');req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
+export async function loadFurniture():Promise<Furniture[]>{const db=await database();return new Promise((resolve,reject)=>{const tx=db.transaction('state','readonly'),req=tx.objectStore('state').get('furniture');req.onsuccess=()=>resolve(Array.isArray(req.result)?req.result:[]);req.onerror=()=>reject(req.error);tx.oncomplete=()=>db.close();tx.onabort=()=>db.close()})}
+export async function saveFurniture(items:Furniture[]){const db=await database();return new Promise<void>((resolve,reject)=>{const tx=db.transaction('state','readwrite');tx.objectStore('state').put(items,'furniture');tx.oncomplete=()=>{db.close();resolve()};tx.onerror=()=>{db.close();reject(tx.error)}})}
