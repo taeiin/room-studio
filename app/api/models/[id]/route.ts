@@ -1,0 +1,3 @@
+import {env} from 'cloudflare:workers';
+import {idPattern,publicJob,type Job} from '../../../../lib/model-service';
+export async function GET(req:Request,{params}:{params:Promise<{id:string}>}){const owner=req.headers.get('oai-authenticated-user-id');if(!owner)return Response.json({error:'로그인이 필요합니다.'},{status:401});const {id}=await params;if(!idPattern.test(id))return Response.json({error:'기록을 찾지 못했습니다.'},{status:404});const j=await env.DB!.prepare('SELECT * FROM model_jobs WHERE id=? AND owner=?').bind(id,owner).first<Job>();if(!j)return Response.json({error:'기록을 찾지 못했습니다.'},{status:404});return Response.json({job:publicJob(j),mode:'free-local'});}

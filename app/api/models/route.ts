@@ -1,0 +1,4 @@
+import {env} from 'cloudflare:workers';
+import {idPattern,publicJob,type Job} from '../../../lib/model-service';
+export async function GET(req:Request){const owner=req.headers.get('oai-authenticated-user-id');if(!owner)return Response.json({error:'로그인 후 저장 기록을 볼 수 있습니다.'},{status:401});const itemId=new URL(req.url).searchParams.get('itemId');const jobs=itemId&&idPattern.test(itemId)?await env.DB!.prepare('SELECT * FROM model_jobs WHERE owner=? AND item_id=? ORDER BY created_at DESC LIMIT 25').bind(owner,itemId).all<Job>():await env.DB!.prepare('SELECT * FROM model_jobs WHERE owner=? ORDER BY created_at DESC LIMIT 25').bind(owner).all<Job>();return Response.json({mode:'free-local',jobs:jobs.results.filter(j=>j.status==='SUCCEEDED').map(publicJob)});}
+export async function POST(){return Response.json({error:'유료 외부 생성은 제거했습니다. 브라우저의 무료 사진 입체화를 사용해주세요.',code:'PAID_DISABLED'},{status:410});}

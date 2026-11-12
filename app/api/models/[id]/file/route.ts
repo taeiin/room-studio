@@ -1,0 +1,3 @@
+import {env} from 'cloudflare:workers';
+import {idPattern} from '../../../../../lib/model-service';
+export async function GET(req:Request,{params}:{params:Promise<{id:string}>}){const owner=req.headers.get('oai-authenticated-user-id');if(!owner)return new Response('Unauthorized',{status:401});const {id}=await params;if(!idPattern.test(id))return new Response('Not found',{status:404});const obj=await env.BUCKET!.get(`models/${owner}/${id}.glb`);if(!obj)return new Response('Not found',{status:404});return new Response(obj.body,{headers:{'Content-Type':'model/gltf-binary','Content-Length':String(obj.size),'Cache-Control':'private, max-age=86400','X-Content-Type-Options':'nosniff'}});}
