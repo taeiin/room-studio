@@ -1,3 +1,3 @@
 import './globals.css';
-export const metadata={title:'여백 — 나의 공간을 고르는 시간',description:'다은마을 35평 A타입 안방의 가구와 디자인 배치를 비교하는 인테리어 스튜디오'};
-export default function Layout({children}:{children:React.ReactNode}){return <html lang="ko"><body>{children}</body></html>}
+export const metadata={title:'Room Studio — 우리 집 공간 만들기',description:'집 도면을 바탕으로 방을 지정하고 3D 공간을 확인합니다.'};
+export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="ko"><body>{children}</body></html>}
