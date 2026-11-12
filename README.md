@@ -8,7 +8,7 @@
 2. 프로젝트 폴더에서 `npm ci`, 이어서 `npm run dev`를 실행하고 터미널에 표시된 주소를 엽니다.
 3. Codex 앱에서 같은 폴더를 열어 프로젝트 실행·개선·배포를 요청합니다.
 
-**[Codex 앱으로 시작하기: 복제부터 가구 제작·배포 준비까지](docs/CODEX-시작하기.md)** 에 단계별 설명과 복사해 쓸 수 있는 요청 예시가 있습니다.
+**[Codex 앱으로 시작하기](docs/CODEX-시작하기.md)** 와 **[내 웹사이트로 배포하기](docs/배포-가이드.md)** 에 단계별 설명과 Codex 요청 예시가 있습니다.
 
 ```bash
 git clone https://github.com/taeiin/room-studio.git
